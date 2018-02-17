@@ -176,6 +176,7 @@ class DirectoryEntry extends React.Component {
       mainModuleId,
       errors,
       corrections,
+      changedModuleShortids,
     } = this.props;
     const { creating, open } = this.state;
 
@@ -259,6 +260,7 @@ class DirectoryEntry extends React.Component {
             markTabsNotDirty={this.markTabsNotDirty}
             errors={errors}
             corrections={corrections}
+            changedModuleShortids={changedModuleShortids}
           />
           <Modal
             isOpen={this.state.showDeleteModuleModal}
