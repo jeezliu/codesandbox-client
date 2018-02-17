@@ -105,7 +105,7 @@ export const forkSandbox = sequence('forkSandbox', [
   set(state`editor.isForkingSandbox`, true),
   actions.forkSandbox,
   actions.moveModuleContent,
-  set(state`editor.sandboxes.${props`sandbox.id`}`, props`sandbox`),
+  actions.setForkedSandbox,
   set(state`editor.currentId`, props`sandbox.id`),
   factories.addNotification('Forked sandbox!', 'success'),
   factories.updateSandboxUrl(props`sandbox`),
