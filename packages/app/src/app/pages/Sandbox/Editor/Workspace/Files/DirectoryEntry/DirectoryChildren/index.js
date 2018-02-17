@@ -29,6 +29,7 @@ class DirectoryChildren extends React.Component {
       markTabsNotDirty,
       errors,
       corrections,
+      changedModuleShortids,
     } = this.props;
 
     return (
@@ -53,6 +54,7 @@ class DirectoryChildren extends React.Component {
               markTabsNotDirty={markTabsNotDirty}
               errors={errors}
               corrections={corrections}
+              changedModuleShortids={changedModuleShortids}
             />
           ))}
         {modules.filter(x => x.directoryShortid === parentShortid).map(m => {
@@ -75,9 +77,7 @@ class DirectoryChildren extends React.Component {
               rename={mainModule ? undefined : renameModule}
               openMenu={openMenu}
               deleteEntry={mainModule ? undefined : deleteEntry}
-              isNotSynced={
-                false /* !this.props.store.editor.isModuleSynced(m.shortid) */
-              }
+              isNotSynced={changedModuleShortids.indexOf(m.shortid) >= 0}
               renameValidator={this.validateTitle}
               setCurrentModule={setCurrentModule}
               isInProjectView={isInProjectView}

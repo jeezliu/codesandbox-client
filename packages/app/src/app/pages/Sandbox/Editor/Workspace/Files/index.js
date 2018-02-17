@@ -41,6 +41,7 @@ class Files extends React.Component {
             this.directory = el;
           }}
           title={sandbox.title || 'Project'}
+          changedModuleShortids={store.editor.changedModuleShortids}
           sandboxId={sandbox.id}
           sandboxTemplate={sandbox.template}
           mainModuleId={store.editor.mainModule.id}
