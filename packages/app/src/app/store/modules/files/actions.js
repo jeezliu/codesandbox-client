@@ -1,4 +1,3 @@
-import { clone } from 'mobx-state-tree';
 import { getModulePath } from 'common/sandbox/modules';
 import getDefinition from 'common/templates';
 
@@ -192,7 +191,7 @@ export function removeDirectory({ state, props }) {
   const directoryIndex = sandbox.directories.findIndex(
     directoryEntry => directoryEntry.shortid === props.moduleShortid
   );
-  const removedDirectory = clone(sandbox.directories[directoryIndex]);
+  const removedDirectory = sandbox.directories[directoryIndex];
 
   state.splice(`editor.sandboxes.${sandboxId}.directories`, directoryIndex, 1);
 
@@ -273,7 +272,7 @@ export function removeModule({ state, props }) {
   const moduleIndex = sandbox.modules.findIndex(
     moduleEntry => moduleEntry.shortid === props.moduleShortid
   );
-  const moduleCopy = clone(sandbox.modules[moduleIndex]);
+  const moduleCopy = sandbox.modules[moduleIndex];
 
   state.splice(`editor.sandboxes.${sandboxId}.modules`, moduleIndex, 1);
 

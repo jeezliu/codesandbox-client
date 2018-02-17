@@ -75,7 +75,9 @@ class DirectoryChildren extends React.Component {
               rename={mainModule ? undefined : renameModule}
               openMenu={openMenu}
               deleteEntry={mainModule ? undefined : deleteEntry}
-              isNotSynced={!this.props.store.editor.isModuleSynced(m.shortid)}
+              isNotSynced={
+                false /*!this.props.store.editor.isModuleSynced(m.shortid)*/
+              }
               renameValidator={this.validateTitle}
               setCurrentModule={setCurrentModule}
               isInProjectView={isInProjectView}
