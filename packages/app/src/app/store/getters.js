@@ -1,9 +1,9 @@
-export function isPatron() {
+export function isPatron(state) {
   return Boolean(
-    this.user && this.user.subscription && this.user.subscription.since
+    state.user && state.user.subscription && state.user.subscription.since
   );
 }
 
-export function isLoggedIn() {
-  return Boolean(this.jwt) && Boolean(this.user);
+export function isLoggedIn(state) {
+  return Boolean(state.jwt) && Boolean(state.user);
 }

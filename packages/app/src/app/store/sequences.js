@@ -271,7 +271,7 @@ export const loadSandbox = factories.withLoadApp([
       actions.getSandbox,
       {
         success: [
-          set(state`editor.sandboxes.${props`sandbox.id`}`, props`sandbox`),
+          actions.addSandbox,
           set(state`editor.currentId`, props`sandbox.id`),
           actions.setCurrentModuleShortid,
           actions.setMainModuleShortid,

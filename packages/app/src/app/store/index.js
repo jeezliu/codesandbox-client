@@ -1,7 +1,6 @@
-import { Module } from 'cerebral';
+import { Module } from '@cerebral/fluent';
 import HttpProvider from '@cerebral/http';
 
-import model from './model';
 import ApiProvider from './providers/Api';
 import ConnectionProvider from './providers/Connection';
 import JwtProvider from './providers/Jwt';
@@ -15,7 +14,7 @@ import KeybindingManagerProvider from './providers/KeybindingManager';
 
 import * as sequences from './sequences';
 import * as errors from './errors';
-import { isPatron, isLoggedIn } from './getters';
+import * as getters from './getters';
 
 import patron from './modules/patron';
 import editor from './modules/editor';
@@ -27,7 +26,6 @@ import workspace from './modules/workspace';
 import files from './modules/files';
 
 export default Module({
-  model,
   state: {
     hasLoadedApp: false,
     jwt: null,
@@ -48,10 +46,12 @@ export default Module({
       y: 0,
     },
     currentModal: null,
-  },
-  getters: {
-    isPatron,
-    isLoggedIn,
+    get isPatron() {
+      return getters.isPatron(this);
+    },
+    get isLoggedIn() {
+      return getters.isLoggedIn(this);
+    },
   },
   signals: {
     appUnmounted: sequences.unloadApp,

@@ -80,7 +80,7 @@ requirePolyfills().then(() => {
 
   try {
     render(
-      <Provider {...controller.provide()}>
+      <Provider store={controller.state} signals={controller.signals}>
         <ThemeProvider theme={theme}>
           <Router history={history}>
             <App />
