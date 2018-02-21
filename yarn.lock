@@ -77,16 +77,16 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@cerebral/fluent@^1.0.0-1519013188625":
-  version "1.0.0-1519013188625"
-  resolved "https://registry.yarnpkg.com/@cerebral/fluent/-/fluent-1.0.0-1519013188625.tgz#a8db360ceea3ba39ff785f9e3e9daa3a6302e2ba"
+"@cerebral/fluent@^1.0.0-1519234729886":
+  version "1.0.0-1519234729886"
+  resolved "https://registry.yarnpkg.com/@cerebral/fluent/-/fluent-1.0.0-1519234729886.tgz#be37ad611c93f3cb00049fa03441a9346bcf6319"
   dependencies:
-    cerebral "^4.2.0-1519013188625"
+    cerebral "^4.2.0-1519234729886"
     mobx "^3.4.1"
 
-"@cerebral/http@^4.2.0-1519013188625":
-  version "4.2.0-1519013188625"
-  resolved "https://registry.yarnpkg.com/@cerebral/http/-/http-4.2.0-1519013188625.tgz#79243fa23f7f4feed72310c0b56d1c1d288ab0a8"
+"@cerebral/http@^4.2.0-1519234729886":
+  version "4.2.0-1519234729886"
+  resolved "https://registry.yarnpkg.com/@cerebral/http/-/http-4.2.0-1519234729886.tgz#5d2b2b2b5a6bd58d3b71190c0893ba5c05e55a57"
 
 "@emmetio/abbreviation@^0.6.0", "@emmetio/abbreviation@^0.6.1":
   version "0.6.5"
@@ -2801,12 +2801,12 @@ center-align@^0.1.1:
     align-text "^0.1.3"
     lazy-cache "^1.0.3"
 
-cerebral@^4.2.0-1519013188625:
-  version "4.2.0-1519013188625"
-  resolved "https://registry.yarnpkg.com/cerebral/-/cerebral-4.2.0-1519013188625.tgz#a6247305bd7e65406128291b0653883cae3a0628"
+cerebral@^4.2.0-1519234729886:
+  version "4.2.0-1519234729886"
+  resolved "https://registry.yarnpkg.com/cerebral/-/cerebral-4.2.0-1519234729886.tgz#2780952b33a26154e328a9488e85551c0dc5df34"
   dependencies:
     es6-error "^4.0.2"
-    function-tree "^3.2.0-1519013188625"
+    function-tree "^3.2.0-1519234729886"
 
 chain-function@^1.0.0:
   version "1.0.0"
@@ -5970,9 +5970,9 @@ function-bind@^1.0.2, function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
 
-function-tree@^3.2.0-1519013188625:
-  version "3.2.0-1519013188625"
-  resolved "https://registry.yarnpkg.com/function-tree/-/function-tree-3.2.0-1519013188625.tgz#7728b09bd8cbcc5a21b3c4bab05af0d5876f0770"
+function-tree@^3.2.0-1519234729886:
+  version "3.2.0-1519234729886"
+  resolved "https://registry.yarnpkg.com/function-tree/-/function-tree-3.2.0-1519234729886.tgz#5e88876b22b47118caa820a61a2c8895753e6ab9"
   dependencies:
     "@types/eventemitter3" "^1.2.0"
     chalk "^1.1.3"
