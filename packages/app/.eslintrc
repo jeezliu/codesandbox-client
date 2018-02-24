@@ -5,5 +5,8 @@
         "config": "config/webpack.common.js"
       }
     }
+  },
+  "rules": {
+    "import/extensions": 0
   }
 }
