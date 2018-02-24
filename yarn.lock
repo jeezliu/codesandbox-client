@@ -77,16 +77,16 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@cerebral/fluent@^1.0.0-1519242130161":
-  version "1.0.0-1519242130161"
-  resolved "https://registry.yarnpkg.com/@cerebral/fluent/-/fluent-1.0.0-1519242130161.tgz#ea388c04b28a48d60125541431ece22878156ab4"
+"@cerebral/fluent@^1.0.0-1519463520217":
+  version "1.0.0-1519463520217"
+  resolved "https://registry.yarnpkg.com/@cerebral/fluent/-/fluent-1.0.0-1519463520217.tgz#77b8e87bcd0eb1cf97bdf13ce939e892a98ea5ec"
   dependencies:
-    cerebral "^4.2.0-1519242130161"
+    cerebral "^5.0.0-1519463520217"
     mobx "^3.4.1"
 
-"@cerebral/http@^4.2.0-1519242130161":
-  version "4.2.0-1519242130161"
-  resolved "https://registry.yarnpkg.com/@cerebral/http/-/http-4.2.0-1519242130161.tgz#757dab8e406b1e7d27322e427a340611c2eaf37d"
+"@cerebral/http@^5.0.0-1519463520217":
+  version "5.0.0-1519463520217"
+  resolved "https://registry.yarnpkg.com/@cerebral/http/-/http-5.0.0-1519463520217.tgz#348596596fd7fd1922280d0256d9c4b376b57ddc"
 
 "@emmetio/abbreviation@^0.6.0", "@emmetio/abbreviation@^0.6.1":
   version "0.6.5"
@@ -322,6 +322,13 @@
   version "9.4.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.6.tgz#d8176d864ee48753d053783e4e463aec86b8d82e"
 
+"@types/react-dom@^16.0.4":
+  version "16.0.4"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.4.tgz#2e8fd45f5443780ed49bf2cdd9809e6091177a7d"
+  dependencies:
+    "@types/node" "*"
+    "@types/react" "*"
+
 "@types/react-router-dom@^4.2.2":
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.2.4.tgz#02c43274129ffe0ac42b348f7c8c4a9a4e127c8a"
@@ -337,7 +344,7 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*":
+"@types/react@*", "@types/react@^16.0.38":
   version "16.0.38"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.38.tgz#76617433ea10274505f60bb86eddfdd0476ffdc2"
 
@@ -2801,12 +2808,12 @@ center-align@^0.1.1:
     align-text "^0.1.3"
     lazy-cache "^1.0.3"
 
-cerebral@^4.2.0-1519242130161:
-  version "4.2.0-1519242130161"
-  resolved "https://registry.yarnpkg.com/cerebral/-/cerebral-4.2.0-1519242130161.tgz#8f6b8ab1a8b1bdef1f75cb34281a22bc62246dfb"
+cerebral@^5.0.0-1519463520217:
+  version "5.0.0-1519463520217"
+  resolved "https://registry.yarnpkg.com/cerebral/-/cerebral-5.0.0-1519463520217.tgz#09cd929eb22fdc91ddf7dd06f79498a8b8f38299"
   dependencies:
     es6-error "^4.0.2"
-    function-tree "^3.2.0-1519242130161"
+    function-tree "^4.0.0-1519463520217"
 
 chain-function@^1.0.0:
   version "1.0.0"
@@ -4715,7 +4722,7 @@ enhanced-resolve@^2.2.2:
     object-assign "^4.0.1"
     tapable "^0.2.3"
 
-enhanced-resolve@^3.3.0, enhanced-resolve@^3.4.0:
+enhanced-resolve@^3.0.0, enhanced-resolve@^3.3.0, enhanced-resolve@^3.4.0:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-3.4.1.tgz#0421e339fd71419b3da13d129b3979040230476e"
   dependencies:
@@ -5803,6 +5810,21 @@ forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
 
+fork-ts-checker-webpack-plugin@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-0.3.0.tgz#3c7339b981f9194c89f38c223258e0c702f99369"
+  dependencies:
+    babel-code-frame "^6.22.0"
+    chalk "^1.1.3"
+    chokidar "^1.7.0"
+    lodash.endswith "^4.2.1"
+    lodash.isfunction "^3.0.8"
+    lodash.isstring "^4.0.1"
+    lodash.startswith "^4.2.1"
+    minimatch "^3.0.4"
+    resolve "^1.5.0"
+    vue-parser "^1.1.5"
+
 form-data@~1.0.0-rc4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-1.0.1.tgz#ae315db9a4907fa065502304a66d7733475ee37c"
@@ -5970,9 +5992,9 @@ function-bind@^1.0.2, function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
 
-function-tree@^3.2.0-1519242130161:
-  version "3.2.0-1519242130161"
-  resolved "https://registry.yarnpkg.com/function-tree/-/function-tree-3.2.0-1519242130161.tgz#6ec11822e590856b9c81359a37cf7c9af28c3ac0"
+function-tree@^4.0.0-1519463520217:
+  version "4.0.0-1519463520217"
+  resolved "https://registry.yarnpkg.com/function-tree/-/function-tree-4.0.0-1519463520217.tgz#6c4fd3bccd21b40be62112797c1f52f10fbe35b0"
   dependencies:
     "@types/eventemitter3" "^1.2.0"
     chalk "^1.1.3"
@@ -15277,6 +15299,16 @@ ts-jest@^20.0.6:
     source-map-support "^0.4.4"
     yargs "^8.0.1"
 
+ts-loader@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-3.5.0.tgz#151d004dcddb4cf8e381a3bf9d6b74c2d957a9c0"
+  dependencies:
+    chalk "^2.3.0"
+    enhanced-resolve "^3.0.0"
+    loader-utils "^1.0.2"
+    micromatch "^3.1.4"
+    semver "^5.0.1"
+
 ts-node@^3.0.6:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-3.3.0.tgz#c13c6a3024e30be1180dd53038fc209289d4bf69"
@@ -16018,6 +16050,12 @@ vue-eslint-parser@^2.0.1, vue-eslint-parser@^2.0.3:
 vue-hot-reload-api@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.2.4.tgz#683bd1d026c0d3b3c937d5875679e9a87ec6cd8f"
+
+vue-parser@^1.1.5:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/vue-parser/-/vue-parser-1.1.6.tgz#3063c8431795664ebe429c23b5506899706e6355"
+  dependencies:
+    parse5 "^3.0.3"
 
 vue-template-compiler@^2.5.2:
   version "2.5.13"

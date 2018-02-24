@@ -25,34 +25,38 @@ import preferences from './modules/preferences';
 import workspace from './modules/workspace';
 import files from './modules/files';
 
-export default Module({
-  state: {
-    hasLoadedApp: false,
-    jwt: null,
-    isAuthenticating: true,
-    authToken: null,
-    error: null,
-    user: null,
-    connected: true,
-    notifications: [],
-    userMenuOpen: false,
-    isLoadingZeit: false,
-    isLoadingCLI: false,
-    isLoadingGithub: false,
-    contextMenu: {
-      show: false,
-      items: [],
-      x: 0,
-      y: 0,
-    },
-    currentModal: null,
-    get isPatron() {
-      return getters.isPatron(this);
-    },
-    get isLoggedIn() {
-      return getters.isLoggedIn(this);
-    },
+import { State } from './types'
+
+const state: State = {
+  hasLoadedApp: false,
+  jwt: null,
+  isAuthenticating: true,
+  authToken: null,
+  error: null,
+  user: null,
+  connected: true,
+  notifications: [],
+  userMenuOpen: false,
+  isLoadingZeit: false,
+  isLoadingCLI: false,
+  isLoadingGithub: false,
+  contextMenu: {
+    show: false,
+    items: [],
+    x: 0,
+    y: 0,
   },
+  currentModal: null,
+  get isPatron() {
+    return getters.isPatron(this);
+  },
+  get isLoggedIn() {
+    return getters.isLoggedIn(this);
+  },
+}
+
+export default Module({
+  state,
   signals: {
     appUnmounted: sequences.unloadApp,
     searchMounted: sequences.loadSearch,
@@ -94,7 +98,7 @@ export default Module({
     connection: ConnectionProvider,
     jwt: JwtProvider,
     jsZip: JSZipProvider,
-    http: HttpProvider(),
+    http: HttpProvider({}),
     browser: BrowserProvider,
     router: RouterProvider,
     utils: UtilsProvider,
