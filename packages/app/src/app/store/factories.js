@@ -1,7 +1,9 @@
 import { sequence, parallel } from 'cerebral';
 import { set, when } from 'cerebral/operators';
 import { state, props } from 'cerebral/tags';
+import trackAnalytics from 'common/utils/analytics';
 import * as actions from './actions';
+import { initializeNotifications } from './modules/user-notifications/sequences';
 
 export function addTabById(id) {
   // eslint-disable-next-line
@@ -34,6 +36,22 @@ export function addTabById(id) {
   };
 }
 
+const trackedEvents = {};
+
+export function track(e, args, { trackOnce } = { trackOnce: false }) {
+  return () => {
+    if (!trackOnce || !trackedEvents[e]) {
+      trackAnalytics(e, args);
+
+      if (trackOnce) {
+        trackedEvents[e] = true;
+      }
+    }
+
+    return {};
+  };
+}
+
 export function setCurrentModuleById(id) {
   // eslint-disable-next-line
   return function setCurrentModuleById({ state, resolve }) {
@@ -50,6 +68,7 @@ export function setCurrentModuleById(id) {
 
 export function setCurrentModule(id) {
   return sequence('setCurrentModule', [
+    set(state`editor.currentTabId`, null),
     addTabById(id),
     setCurrentModuleById(id),
   ]);
@@ -82,6 +101,22 @@ export function updateSandboxUrl(sandbox) {
   };
 }
 
+const shouldShowChangelogModal = when(state`hasLogIn`, loggedIn => {
+  if (!loggedIn) {
+    return false;
+  }
+  if (document.cookie.includes('changelog-seen=1')) {
+    return false;
+  }
+
+  // Don't show it yet, make announcement first
+  return false;
+
+  // document.cookie = 'changelog-seen=1; Path=/;';
+
+  // return true;
+});
+
 export function withLoadApp(continueSequence) {
   return sequence('loadApp', [
     when(state`hasLoadedApp`),
@@ -94,6 +129,13 @@ export function withLoadApp(continueSequence) {
         actions.setStoredSettings,
         actions.setKeybindings,
         actions.startKeybindings,
+
+        shouldShowChangelogModal,
+        {
+          true: [set(props`modal`, 'changelogDashboard'), actions.setModal],
+          false: [],
+        },
+
         when(state`jwt`),
         {
           true: [
@@ -104,6 +146,9 @@ export function withLoadApp(continueSequence) {
                   success: [
                     set(state`user`, props`user`),
                     actions.setPatronPrice,
+                    actions.setSignedInCookie,
+                    actions.connectWebsocket,
+                    initializeNotifications,
                   ],
                   error: [
                     addNotification(
@@ -121,6 +166,7 @@ export function withLoadApp(continueSequence) {
         },
         set(state`hasLoadedApp`, true),
         set(state`isAuthenticating`, false),
+        actions.getContributors,
       ],
     },
   ]);

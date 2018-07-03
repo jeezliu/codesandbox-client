@@ -68,7 +68,7 @@ export async function saveCache(
     manager.clearCache();
   }
 
-  if (shouldSaveOnlineCache(firstRun, changes)) {
+  if (shouldSaveOnlineCache(firstRun, changes) && SCRIPT_VERSION) {
     const stringifiedManagerState = JSON.stringify(managerState);
 
     debug(
@@ -90,8 +90,10 @@ export async function saveCache(
       })
       .then(x => x.json())
       .catch(e => {
-        console.error('Something went wrong while saving cache.');
-        console.error(e);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Something went wrong while saving cache.');
+          console.error(e);
+        }
       });
   }
 
