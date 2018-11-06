@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 import { generateFileFromSandbox } from 'common/templates/configuration/package-json';
+import { identify } from 'common/utils/analytics';
 
 import { parseConfigurations } from './utils/parse-configurations';
-import { mainModule } from './utils/main-module';
+import { mainModule, defaultOpenedModule } from './utils/main-module';
 
 export function getSandbox({ props, api, path }) {
   return api
@@ -18,13 +19,26 @@ export function getSandbox({ props, api, path }) {
     });
 }
 
-export function optimisticallyAddNpmDependency({ state, props }) {
-  const id = state.get('editor.currentId');
+export function callVSCodeCallback({ props }) {
+  const { cbID } = props;
+  if (cbID) {
+    if (window.cbs && window.cbs[cbID]) {
+      window.cbs[cbID](undefined, undefined);
+      delete window.cbs[cbID];
+    }
+  }
+}
 
-  state.set(
-    `editor.sandboxes.${id}.npmDependencies.${props.name}`,
-    props.version
-  );
+export function callVSCodeCallbackError({ props }) {
+  const { cbID } = props;
+  if (cbID) {
+    if (window.cbs && window.cbs[cbID]) {
+      const errorMessage =
+        props.message || 'Something went wrong while saving the file.';
+      window.cbs[cbID](new Error(errorMessage), undefined);
+      delete window.cbs[cbID];
+    }
+  }
 }
 
 export function setWorkspace({ state, props }) {
@@ -49,7 +63,7 @@ export function setUrlOptions({ state, router, utils }) {
 
       if (module) {
         state.push('editor.tabs', {
-          type: 'module',
+          type: 'MODULE',
           moduleShortid: module.shortid,
           dirty: false,
         });
@@ -84,7 +98,7 @@ export function setUrlOptions({ state, router, utils }) {
   if (options.highlightedLines)
     state.set('editor.highlightedLines', options.highlightedLines);
   if (options.editorSize)
-    state.set('preferences.settings.editorSize', options.editorSize);
+    state.set('editor.previewWindow.editorSize', options.editorSize);
   if (options.hideNavigation)
     state.set('preferences.hideNavigation', options.hideNavigation);
   if (options.isInProjectView)
@@ -101,6 +115,9 @@ export function setUrlOptions({ state, router, utils }) {
     state.set('preferences.showDevtools', options.expandDevTools);
   if (options.runOnClick)
     state.set(`preferences.runOnClick`, options.runOnClick);
+  if (options.previewWindow) {
+    state.set('editor.previewWindow.content', options.previewWindow);
+  }
 }
 
 export const setSandboxConfigOptions = ({ state }) => {
@@ -124,7 +141,7 @@ export function setCurrentModuleShortid({ props, state }) {
     sandbox.modules.map(m => m.shortid).indexOf(currentModuleShortid) === -1
   ) {
     const parsedConfigs = parseConfigurations(sandbox);
-    const module = mainModule(sandbox, parsedConfigs);
+    const module = defaultOpenedModule(sandbox, parsedConfigs);
 
     state.set('editor.currentModuleShortid', module.shortid);
   }
@@ -307,6 +324,7 @@ export function removeJwtFromStorage({ jwt }) {
 
 export function setSignedInCookie() {
   document.cookie = 'signedIn=true; Path=/;';
+  identify('signed_in', true);
 }
 
 export function listenToConnectionChange({ connection }) {

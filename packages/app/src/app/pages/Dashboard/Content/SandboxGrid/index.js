@@ -192,8 +192,11 @@ class SandboxGrid extends React.Component<*, State> {
       });
     }
   };
+  isScrolling = () => this.scrolling;
 
-  cellRenderer = ({ rowIndex, columnIndex, key, style }) => {
+  cellRenderer = ({ rowIndex, columnIndex, key, style, isScrolling }) => {
+    this.scrolling = isScrolling;
+
     let index = rowIndex * this.columnCount + columnIndex;
     const { sandboxes, signals } = this.props;
 
@@ -238,6 +241,7 @@ class SandboxGrid extends React.Component<*, State> {
 
     return (
       <SandboxItem
+        isScrolling={this.isScrolling}
         id={item.id}
         title={item.title || item.id}
         details={editedSince}
@@ -295,7 +299,7 @@ class SandboxGrid extends React.Component<*, State> {
     });
 
     return (
-      <Content onMouseDown={this.onMouseDown}>
+      <Content style={{ overflowX: 'hidden' }} onMouseDown={this.onMouseDown}>
         <DragLayer />
         <AutoSizer>
           {({ width, height }) => {

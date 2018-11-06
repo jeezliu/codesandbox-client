@@ -100,7 +100,11 @@ class SandboxItem extends React.PureComponent<Props> {
 
   componentDidMount() {
     if (this.props.selected) {
-      if (this.el && typeof this.el.focus === 'function') {
+      if (
+        this.el &&
+        typeof this.el.focus === 'function' &&
+        !this.props.isScrolling()
+      ) {
         this.el.focus();
       }
     }
@@ -132,8 +136,8 @@ class SandboxItem extends React.PureComponent<Props> {
         {
           title:
             selectedCount > 1
-              ? `Move ${selectedCount} Sandboxes To 'My Sandboxes'`
-              : "Move Sandbox To 'My Sandboxes'",
+              ? `Recover ${selectedCount} Sandboxes`
+              : 'Recover Sandbox',
           action: () => {
             this.props.undeleteSandboxes();
             return true;
@@ -296,8 +300,8 @@ class SandboxItem extends React.PureComponent<Props> {
   };
 
   handleKeyDown = (e: KeyboardEvent) => {
-    track('Dashboard - Sandbox Opened With Enter');
     if (e.keyCode === 13) {
+      track('Dashboard - Sandbox Opened With Enter');
       // enter
       this.openSandbox();
     }
@@ -343,10 +347,28 @@ class SandboxItem extends React.PureComponent<Props> {
       );
     }
 
+    const templateDefinition = getTemplate(this.props.template);
+
+    if (templateDefinition.isServer) {
+      return `Container Sandbox`;
+    }
+
+    if (process.env.STAGING) {
+      return `Staging Sandbox`;
+    }
+
     return `Generating Screenshot...`;
   };
 
-  hasScreenshot = () => !this.props.removedAt && this.props.privacy !== 2;
+  hasScreenshot = () => {
+    const templateDefinition = getTemplate(this.props.template);
+
+    if (templateDefinition.isServer) {
+      return false;
+    }
+
+    return !this.props.removedAt && this.props.privacy !== 2;
+  };
 
   render() {
     const {

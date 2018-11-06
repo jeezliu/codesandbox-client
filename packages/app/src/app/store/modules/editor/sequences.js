@@ -1,7 +1,11 @@
 import { set, when, equals, toggle, increment } from 'cerebral/operators';
-import { state, props, string } from 'cerebral/tags';
+import { state, props } from 'cerebral/tags';
 import * as actions from './actions';
-import { closeTabByIndex } from '../../actions';
+import {
+  closeTabByIndex,
+  callVSCodeCallback,
+  callVSCodeCallbackError,
+} from '../../actions';
 import { renameModule } from '../files/sequences';
 import {
   sendModuleSaved,
@@ -13,7 +17,7 @@ import {
   unSetReceivingStatus,
 } from '../live/actions';
 import {
-  ensureOwnedSandbox,
+  ensureOwnedEditable,
   forkSandbox,
   fetchGitChanges,
   closeModal,
@@ -53,24 +57,35 @@ export const stopResizing = set(state`editor.isResizing`, false);
 
 export const createZip = actions.createZip;
 
+export const clearCurrentModule = [
+  set(state`editor.currentModuleShortid`, null),
+];
+
 export const changeCurrentModule = [
   track('Open File', {}),
   setReceivingStatus,
-  setCurrentModule(props`id`),
-  equals(state`live.isLive`),
+  actions.getIdFromModulePath,
+  when(props`id`),
   {
     true: [
-      equals(state`live.isCurrentEditor`),
+      setCurrentModule(props`id`),
+      equals(state`live.isLive`),
       {
         true: [
-          getSelectionsForCurrentModule,
-          set(state`editor.pendingUserSelections`, props`selections`),
-          sendChangeCurrentModule,
+          equals(state`live.isCurrentEditor`),
+          {
+            true: [
+              getSelectionsForCurrentModule,
+              set(state`editor.pendingUserSelections`, props`selections`),
+              sendChangeCurrentModule,
+            ],
+            false: [],
+          },
         ],
         false: [],
       },
     ],
-    false: [],
+    false: [clearCurrentModule],
   },
 ];
 
@@ -89,6 +104,8 @@ export const updatePrivacy = [
     invalid: [],
   },
 ];
+
+export const updateFrozen = actions.updateFrozen;
 
 export const toggleLikeSandbox = [
   when(state`editor.sandboxes.${props`id`}.userLiked`),
@@ -121,14 +138,30 @@ export const forceForkSandbox = [
 
 export const changeCode = [
   track('Change Code', {}, { trackOnce: true }),
-  actions.setCode,
+
+  when(
+    state`live.isLive`,
+    props`noLive`,
+    (isLive, noLive) => isLive && !noLive
+  ),
+  {
+    true: [
+      setReceivingStatus,
+      getCodeOperation,
+      sendTransform,
+      actions.setCode,
+      unSetReceivingStatus,
+    ],
+    false: actions.setCode,
+  },
+
   actions.addChangedModule,
   actions.unsetDirtyTab,
 ];
 
 export const saveChangedModules = [
   track('Save Modified Modules', {}),
-  ensureOwnedSandbox,
+  ensureOwnedEditable,
   actions.outputChangedModules,
   actions.saveChangedModules,
   actions.removeChangedModules,
@@ -145,39 +178,61 @@ export const saveChangedModules = [
   },
 ];
 
+export const prettifyCode = [
+  track('Prettify Code', {}),
+  actions.prettifyCode,
+  {
+    success: [changeCode],
+    invalidPrettierSandboxConfig: addNotification(
+      'Invalid JSON in sandbox .prettierrc file',
+      'error'
+    ),
+    error: [],
+  },
+];
+
 export const saveCode = [
   track('Save Code', {}),
-  ensureOwnedSandbox,
-  when(props`code`),
+  ensureOwnedEditable,
+  when(state`preferences.settings.experimentVSCode`),
   {
-    true: actions.setCode,
-    false: [],
-  },
-  when(state`preferences.settings.prettifyOnSaveEnabled`),
-  {
-    true: [
-      actions.prettifyCode,
+    true: [changeCode],
+    false: [
+      when(state`preferences.settings.prettifyOnSaveEnabled`),
       {
-        success: actions.setCode,
-        error: [],
-      },
-    ],
-    false: [],
-  },
-  actions.saveModuleCode,
-  actions.setModuleSaved,
-  when(state`editor.currentSandbox.originalGit`),
-  {
-    true: [
-      when(state`workspace.openedWorkspaceItem`, item => item === 'github'),
-      {
-        true: fetchGitChanges,
+        true: [prettifyCode],
         false: [],
       },
     ],
-    false: [],
   },
-  sendModuleSaved,
+
+  actions.saveModuleCode,
+  {
+    success: [
+      actions.setModuleSaved,
+      callVSCodeCallback,
+      when(state`editor.currentSandbox.originalGit`),
+      {
+        true: [
+          when(state`workspace.openedWorkspaceItem`, item => item === 'github'),
+          {
+            true: fetchGitChanges,
+            false: [],
+          },
+        ],
+        false: [],
+      },
+      sendModuleSaved,
+
+      actions.updateTemplateIfSSE,
+    ],
+
+    error: [callVSCodeCallbackError],
+    codeOutdated: [
+      addNotification(props`message`, 'warning'),
+      callVSCodeCallbackError,
+    ],
+  },
 ];
 
 export const discardModuleChanges = [
@@ -185,19 +240,7 @@ export const discardModuleChanges = [
   actions.getSavedCode,
   when(props`code`),
   {
-    true: [
-      equals(state`live.isLive`),
-      {
-        true: [
-          setReceivingStatus,
-          getCodeOperation,
-          sendTransform,
-          changeCode,
-          unSetReceivingStatus,
-        ],
-        false: [changeCode],
-      },
-    ],
+    true: [changeCode, actions.touchFile],
     false: [],
   },
 ];
@@ -205,44 +248,30 @@ export const discardModuleChanges = [
 export const addNpmDependency = [
   track('Add NPM Dependency', {}),
   closeModal,
-  ensureOwnedSandbox,
+  ensureOwnedEditable,
   when(props`version`),
   {
     true: [],
     false: [actions.getLatestVersion],
   },
   actions.addNpmDependencyToPackage,
-  equals(state`live.isLive`),
-  {
-    true: [
-      setReceivingStatus,
-      getCodeOperation,
-      sendTransform,
-      saveCode,
-      unSetReceivingStatus,
-    ],
-    false: [saveCode],
-  },
+  changeCode,
+  saveCode,
 ];
 
 export const removeNpmDependency = [
   track('Remove NPM Dependency', {}),
-  ensureOwnedSandbox,
+  ensureOwnedEditable,
   actions.removeNpmDependencyFromPackage,
-  equals(state`live.isLive`),
-  {
-    true: [
-      setReceivingStatus,
-      getCodeOperation,
-      sendTransform,
-      saveCode,
-      unSetReceivingStatus,
-    ],
-    false: [saveCode],
-  },
+  changeCode,
+  saveCode,
 ];
 
-export const updateSandboxPackage = [actions.updateSandboxPackage, saveCode];
+export const updateSandboxPackage = [
+  actions.updateSandboxPackage,
+  changeCode,
+  saveCode,
+];
 
 export const handlePreviewAction = [
   equals(props`action.action`),
@@ -277,23 +306,18 @@ export const handlePreviewAction = [
 ];
 
 export const setPreviewBounds = [actions.setPreviewBounds];
+export const togglePreview = [
+  when(state`editor.previewWindow.content`),
+  {
+    true: [set(state`editor.previewWindow.content`, undefined)],
+    false: [set(state`editor.previewWindow.content`, 'browser')],
+  },
+];
 
 export const setPreviewContent = [
   set(state`editor.previewWindow.content`, props`content`),
 ];
 
-export const prettifyCode = [
-  track('Prettify Code', {}),
-  actions.prettifyCode,
-  {
-    success: [changeCode],
-    invalidPrettierSandboxConfig: addNotification(
-      'Invalid JSON in sandbox .prettierrc file',
-      'error'
-    ),
-    error: addNotification(
-      string`Something went wrong prettifying the code: "${props`error.message`}"`,
-      'error'
-    ),
-  },
+export const updateEditorSize = [
+  set(state`editor.previewWindow.editorSize`, props`editorSize`),
 ];

@@ -9,6 +9,7 @@ import {
   SubDescription,
   Rule,
 } from '../../elements';
+import VSCodePlaceholder from '../../VSCodePlaceholder';
 
 function EditorSettings({ store, signals }) {
   const bindValue = name => ({
@@ -26,16 +27,6 @@ function EditorSettings({ store, signals }) {
 
       <SubContainer>
         <PreferenceContainer>
-          <PaddedPreference
-            title="Zen Mode"
-            type="boolean"
-            {...bindValue('zenMode')}
-          />
-          <SubDescription>
-            Hide all distracting elements, perfect for lessons and
-            presentations.
-          </SubDescription>
-          <Rule />
           <PaddedPreference
             title="Use CodeMirror"
             type="boolean"
@@ -64,18 +55,20 @@ function EditorSettings({ store, signals }) {
             Whether linting as you type should be enabled.
           </SubDescription>
           <Rule />
+          <VSCodePlaceholder hideTitle>
+            <PaddedPreference
+              title="Prettify On Save"
+              type="boolean"
+              tooltip="Made possible by Prettier"
+              {...bindValue('prettifyOnSaveEnabled')}
+            />
+            <SubDescription>
+              Format all code on save with prettier.
+            </SubDescription>
+            <Rule />
+          </VSCodePlaceholder>
           <PaddedPreference
-            title="Prettify on save"
-            type="boolean"
-            tooltip="Made possible by Prettier"
-            {...bindValue('prettifyOnSaveEnabled')}
-          />
-          <SubDescription>
-            Format all code on save with prettier.
-          </SubDescription>
-          <Rule />
-          <PaddedPreference
-            title="VIM mode"
+            title="VIM Mode"
             type="boolean"
             {...bindValue('vimMode')}
           />
@@ -83,44 +76,6 @@ function EditorSettings({ store, signals }) {
             This will override Use CodeMirror setting as Monaco doesn{"'"}t have
             a VIM mode yet.
           </SubDescription>
-          <Rule />
-          <PaddedPreference
-            title="Font size"
-            type="number"
-            {...bindValue('fontSize')}
-          />
-          <Rule />
-          <PaddedPreference
-            title="Font family"
-            type="string"
-            placeholder="Source Code Pro"
-            {...bindValue('fontFamily')}
-          />
-          <Rule />
-          <PaddedPreference
-            title="Font ligatures enabled"
-            type="boolean"
-            {...bindValue('enableLigatures')}
-          />
-          <SubDescription>
-            Whether we should enable{' '}
-            <a
-              href="https://en.wikipedia.org/wiki/Typographic_ligature"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              font ligatures
-            </a>.
-          </SubDescription>
-          <Rule />
-          <PaddedPreference
-            title="Line height"
-            type="number"
-            placeholder="1.15"
-            step="0.05"
-            style={{ width: '4rem' }}
-            {...bindValue('lineHeight')}
-          />
         </PreferenceContainer>
       </SubContainer>
     </div>

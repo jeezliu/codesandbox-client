@@ -77,19 +77,22 @@ export function setCurrentModule(id) {
 export function addNotification(
   title,
   notificationType,
-  timeAlive = 2,
+  timeAlive,
   buttons = []
 ) {
-  // eslint-disable-next-line
+  // eslint-disable-next-line no-shadow
   return function addNotification({ state, resolve }) {
     const now = Date.now();
+    const notificationTypeValue = resolve.value(notificationType);
+    const timeAliveDefault = notificationTypeValue === 'error' ? 6 : 3;
 
     state.push('notifications', {
       id: now,
       title: resolve.value(title),
-      notificationType: resolve.value(notificationType),
+      notificationType: notificationTypeValue,
       buttons: resolve.value(buttons),
-      endTime: now + resolve.value(timeAlive) * 1000,
+      endTime:
+        now + (timeAlive ? resolve.value(timeAlive) : timeAliveDefault) * 1000,
     });
   };
 }
@@ -101,20 +104,14 @@ export function updateSandboxUrl(sandbox) {
   };
 }
 
-const shouldShowChangelogModal = when(state`hasLogIn`, loggedIn => {
-  if (!loggedIn) {
-    return false;
-  }
-  if (document.cookie.includes('changelog-seen=1')) {
+const shouldShowVSCodeOption = when(state`isLoggedIn`, () => {
+  if (document.cookie.includes('vscode-seen=1')) {
     return false;
   }
 
-  // Don't show it yet, make announcement first
-  return false;
+  document.cookie = 'vscode-seen=1; Path=/;';
 
-  // document.cookie = 'changelog-seen=1; Path=/;';
-
-  // return true;
+  return true;
 });
 
 export function withLoadApp(continueSequence) {
@@ -130,9 +127,15 @@ export function withLoadApp(continueSequence) {
         actions.setKeybindings,
         actions.startKeybindings,
 
-        shouldShowChangelogModal,
+        shouldShowVSCodeOption,
         {
-          true: [set(props`modal`, 'changelogDashboard'), actions.setModal],
+          true: [
+            addNotification(
+              'You can now open VSCode directly in CodeSandbox, enable it in Preferences under experiments!',
+              'notice',
+              60 // a minute
+            ),
+          ],
           false: [],
         },
 
@@ -162,7 +165,10 @@ export function withLoadApp(continueSequence) {
               continueSequence,
             ]),
           ],
-          false: continueSequence,
+          false: [
+            actions.removeJwtFromStorage, // To delete the signedIn cookie as well, to be sure
+            continueSequence,
+          ],
         },
         set(state`hasLoadedApp`, true),
         set(state`isAuthenticating`, false),

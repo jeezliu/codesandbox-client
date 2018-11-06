@@ -88,27 +88,28 @@ module.exports = {
     path: paths.appBuild,
     publicPath,
     globalObject: 'this',
+    jsonpFunction: 'csbJsonP', // So we don't conflict with webpack generated libraries in the sandbox
   },
 
   module: {
     rules: [
       {
-        test: /\.js$/,
-        include: [paths.src, paths.common, /@emmetio/],
-        exclude: [
-          /eslint\.4\.1\.0\.min\.js$/,
-          /typescriptServices\.js$/,
-          new RegExp(`babel-runtime${sepRe}`),
-        ],
-        loader: 'happypack/loader',
+        test: /\.wasm$/,
+        loader: 'file-loader',
+        type: 'javascript/auto',
       },
-
       // Transpile node dependencies, node deps are often not transpiled for IE11
       {
         test: [
           new RegExp(`${sepRe}node_modules${sepRe}.*ansi-styles`),
           new RegExp(`${sepRe}node_modules${sepRe}.*chalk`),
           new RegExp(`${sepRe}node_modules${sepRe}.*jest`),
+          new RegExp(`${sepRe}node_modules${sepRe}.*monaco-textmate`),
+          new RegExp(`${sepRe}node_modules${sepRe}.*onigasm`),
+          new RegExp(`react-icons`),
+          new RegExp(`${sepRe}node_modules${sepRe}.*gsap`),
+          new RegExp(`${sepRe}node_modules${sepRe}.*babel-plugin-macros`),
+          new RegExp(`sandbox-hooks`),
           new RegExp(
             `${sepRe}node_modules${sepRe}vue-template-es2015-compiler`
           ),
@@ -119,23 +120,39 @@ module.exports = {
         loader: 'babel-loader',
         query: {
           presets: [
+            '@babel/preset-flow',
             [
-              'env',
+              '@babel/preset-env',
               {
                 targets: {
                   ie: 11,
+                  esmodules: true,
                 },
+                modules: 'umd',
+                useBuiltIns: false,
               },
             ],
-            'react',
+            '@babel/preset-react',
           ],
           plugins: [
-            'transform-async-to-generator',
-            'transform-object-rest-spread',
-            'transform-class-properties',
-            'transform-runtime',
+            '@babel/plugin-transform-template-literals',
+            '@babel/plugin-transform-destructuring',
+            '@babel/plugin-transform-async-to-generator',
+            '@babel/plugin-proposal-object-rest-spread',
+            '@babel/plugin-proposal-class-properties',
+            '@babel/plugin-transform-runtime',
           ],
         },
+      },
+      {
+        test: /\.js$/,
+        include: [paths.src, paths.common, /@emmetio/],
+        exclude: [
+          /eslint\.4\.1\.0\.min\.js$/,
+          /typescriptServices\.js$/,
+          /\.no-webpack\./,
+        ],
+        loader: 'happypack/loader',
       },
 
       // `eslint-plugin-vue/lib/index.js` depends on `fs` module we cannot use in browsers, so needs shimming.
@@ -201,6 +218,15 @@ module.exports = {
           replace: `throw new Error('module assert not found')`,
         },
       },
+      // Remove dynamic require in jest circus
+      {
+        test: /babel-plugin-macros/,
+        loader: 'string-replace-loader',
+        options: {
+          search: `_require(`,
+          replace: `self.require(`,
+        },
+      },
       // "postcss" loader applies autoprefixer to our CSS.
       // "css" loader resolves paths in CSS and adds assets as dependencies.
       // "style" loader turns CSS into JS modules that inject <style> tags.
@@ -252,11 +278,13 @@ module.exports = {
       /typescriptServices\.js$/,
       /browserfs\.js/,
       /browserfs\.min\.js/,
+      /standalone-packages\/codesandbox-browserfs/,
+      /standalone-packages\/vscode\//,
     ],
   },
 
   // To make jsonlint work
-  externals: ['file', 'system'],
+  externals: ['file', 'system', 'jsdom', 'prettier', 'cosmiconfig'],
 
   resolve: {
     mainFields: ['browser', 'module', 'jsnext:main', 'main'],
@@ -400,6 +428,13 @@ module.exports = {
         path.join(paths.config, 'stubs/load-rules.compiled.js')
       ),
 
+    // DON'T TOUCH THIS. There's a bug in Webpack 4 that causes bundle splitting
+    // to break when using lru-cache. So we literally gice them our own version
+    new webpack.NormalModuleReplacementPlugin(
+      /^lru-cache$/,
+      path.join(paths.config, 'stubs/lru-cache.js')
+    ),
+
     // If you require a missing module and then `npm install` it, you still have
     // to restart the development server for Webpack to discover it. This plugin
     // makes the discovery automatic so you don't have to restart.
@@ -409,18 +444,21 @@ module.exports = {
     new CopyWebpackPlugin(
       [
         {
-          from: __DEV__
-            ? '../../node_modules/monaco-editor/dev/vs'
-            : '../../node_modules/monaco-editor/min/vs',
-          to: 'public/vs',
+          from: '../../standalone-packages/vscode-editor/release/min/vs',
+          to: 'public/vscode7/vs',
+          force: true,
         },
-        __PROD__ && {
-          from: '../../node_modules/monaco-editor/min-maps',
-          to: 'public/min-maps',
+        {
+          from: '../../node_modules/onigasm/lib/onigasm.wasm',
+          to: 'public/onigasm/2.2.1/onigasm.wasm',
         },
         {
           from: '../../node_modules/monaco-vue/release/min',
-          to: 'public/vs/language/vue',
+          to: 'public/13/vs/language/vue',
+        },
+        {
+          from: '../sse-hooks/dist',
+          to: 'public/sse-hooks',
         },
         {
           from: 'static',
@@ -428,7 +466,7 @@ module.exports = {
         },
         {
           from: '../../standalone-packages/codesandbox-browserfs/dist',
-          to: 'static/browserfs',
+          to: 'static/browserfs2',
         },
       ].filter(x => x)
     ),

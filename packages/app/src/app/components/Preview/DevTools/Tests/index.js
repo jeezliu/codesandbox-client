@@ -5,6 +5,7 @@ import { actions, dispatch, listen } from 'codesandbox-api';
 import SplitPane from 'react-split-pane';
 
 import immer from 'immer';
+import getTemplate, { type Template } from 'common/templates';
 
 import { Container, TestDetails, TestContainer } from './elements';
 
@@ -65,6 +66,9 @@ export type File = {
 
 type State = {
   selectedFilePath: ?string,
+  fileExpansionState: {
+    [path: string]: Boolean,
+  },
   files: {
     [path: string]: File,
   },
@@ -75,6 +79,7 @@ type State = {
 const INITIAL_STATE = {
   files: {},
   selectedFilePath: null,
+  fileExpansionState: {},
   running: true,
   watching: true,
 };
@@ -107,6 +112,10 @@ class Tests extends React.Component<Props, State> {
         running: true,
       });
     }
+
+    if (this.props.hidden && !nextProps.hidden) {
+      this.runAllTests();
+    }
   }
 
   selectFile = (file: File) => {
@@ -116,8 +125,20 @@ class Tests extends React.Component<Props, State> {
     });
   };
 
+  toggleFileExpansion = (file: File) => {
+    this.setState(
+      immer(this.state, state => {
+        state.fileExpansionState[file.fileName] = !state.fileExpansionState[
+          file.fileName
+        ];
+      })
+    );
+  };
+
   handleMessage = (data: Object) => {
-    if (data.type === 'test') {
+    if (data.type === 'done' && (!this.props.hidden || this.props.standalone)) {
+      this.runAllTests();
+    } else if (data.type === 'test') {
       switch (data.event) {
         case 'initialize_tests': {
           this.currentDescribeBlocks = [];
@@ -125,6 +146,14 @@ class Tests extends React.Component<Props, State> {
             this.props.updateStatus('clear');
           }
           this.setState(INITIAL_STATE);
+          break;
+        }
+        case 'test_count': {
+          const { updateStatus } = this.props;
+          if (updateStatus) {
+            updateStatus('clear');
+            updateStatus('info', data.count);
+          }
           break;
         }
         case 'total_test_start': {
@@ -173,6 +202,8 @@ class Tests extends React.Component<Props, State> {
                 tests: {},
                 fileName: data.path,
               };
+
+              state.fileExpansionState[data.path] = true;
             })
           );
           break;
@@ -183,6 +214,8 @@ class Tests extends React.Component<Props, State> {
               if (state.files[data.path]) {
                 delete state.files[data.path];
               }
+
+              delete state.fileExpansionState[data.path];
             })
           );
           break;
@@ -215,6 +248,8 @@ class Tests extends React.Component<Props, State> {
                   tests: {},
                   fileName: data.path,
                 };
+
+                state.fileExpansionState[data.path] = true;
               }
 
               state.files[data.path].tests[testName.join('||||')] = {
@@ -422,6 +457,8 @@ class Tests extends React.Component<Props, State> {
                     key={fileName}
                     runTests={this.runTests}
                     openFile={this.openFile}
+                    isExpanded={this.state.fileExpansionState[fileName]}
+                    onFileExpandToggle={this.toggleFileExpansion}
                   />
                 ))}
             </div>
@@ -448,4 +485,5 @@ export default {
   title: 'Tests',
   Content: Tests,
   actions: [],
+  show: (template: Template) => !getTemplate(template).isServer,
 };

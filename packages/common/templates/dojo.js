@@ -2,6 +2,7 @@
 
 import Template from './template';
 import { decorateSelector } from '../theme';
+import configurations from './configuration';
 
 export class DojoTemplate extends Template {
   // eslint-disable-next-line no-unused-vars
@@ -20,7 +21,7 @@ export class DojoTemplate extends Template {
 
 export default new DojoTemplate(
   '@dojo/cli-create-app',
-  'Dojo 2',
+  'Dojo',
   'https://github.com/dojo/cli-create-app',
   'github/dojo/dojo-codesandbox-template',
   decorateSelector(() => '#D3471C'),
@@ -28,5 +29,8 @@ export default new DojoTemplate(
     showOnHomePage: true,
     showCube: false,
     isTypescript: true,
+    extraConfigurations: {
+      '/tsconfig.json': configurations.tsconfig
+    },
   }
 );

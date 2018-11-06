@@ -16,6 +16,15 @@ export function whenModuleIsSelected({ state, props, path }) {
     : path.false();
 }
 
+export function denormalizeModules({ state, props }) {
+  const { files } = props;
+  const sandbox = state.get('editor.currentSandbox');
+
+  const { modules, directories } = denormalize(files, sandbox.directories);
+
+  return { modules, directories };
+}
+
 export function massCreateModules({ state, props, api, path }) {
   const { directories, modules, directoryShortid } = props;
   const sandboxId = state.get('editor.currentId');
@@ -68,8 +77,14 @@ export async function uploadFiles({ api, props, path }) {
 
           if (
             (/\.(j|t)sx?$/.test(filePath) ||
-              /\.json?$/.test(filePath) ||
-              /\.html?$/.test(filePath) ||
+              /\.coffee$/.test(filePath) ||
+              /\.json$/.test(filePath) ||
+              /\.html$/.test(filePath) ||
+              /\.vue$/.test(filePath) ||
+              /\.styl$/.test(filePath) ||
+              /\.(le|sc|sa)ss$/.test(filePath) ||
+              /\.haml$/.test(filePath) ||
+              /\.pug$/.test(filePath) ||
               file.type.startsWith('text/') ||
               file.type === 'application/json') &&
             dataURI.length < MAX_FILE_SIZE
@@ -176,6 +191,8 @@ export function createOptimisticModule({ state, props, utils }) {
     shortid: utils.createOptimisticId(),
     isBinary: props.isBinary === undefined ? false : props.isBinary,
     sourceId: state.get('editor.currentSandbox.sourceId'),
+    insertedAt: new Date().toString(),
+    updatedAt: new Date().toString(),
   };
 
   return { optimisticModule };
@@ -188,6 +205,8 @@ export function createOptimisticDirectory({ state, props, utils }) {
     directoryShortid: props.directoryShortid || null,
     shortid: utils.createOptimisticId(),
     sourceId: state.get('editor.currentSandbox.sourceId'),
+    insertedAt: new Date().toString(),
+    updatedAt: new Date().toString(),
   };
 
   return { optimisticDirectory };
@@ -516,7 +535,9 @@ export function setDefaultNewCode({ state, props }) {
   ) {
     let code = '';
 
-    if (config.generateFileFromState) {
+    if (props.code) {
+      code = props.code;
+    } else if (config.generateFileFromState) {
       code = config.generateFileFromState(state);
     } else if (config.generateFileFromSandbox) {
       code = config.generateFileFromSandbox(sandbox);
@@ -559,8 +580,8 @@ export function recoverFiles({ recover, controller, state }) {
         const titleB = `recovered '${module.title}'`;
         state.push('editor.tabs', {
           type: 'DIFF',
-          codeA: module.code,
-          codeB: recoverData.code,
+          codeA: module.code || '',
+          codeB: recoverData.code || '',
           titleA,
           titleB,
           fileTitle: module.title,

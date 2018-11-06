@@ -31,19 +31,15 @@ module.exports = merge(commonConfig, {
     sourceMapFilename: '[file].map', // Default
   },
   mode: 'production',
+  stats: 'verbose',
 
   optimization: {
     minimizer: [
       new UglifyJSPlugin({
         cache: true,
         parallel: true,
-        sourceMap: false,
+        sourceMap: true,
         uglifyOptions: {
-          compress: {
-            // inline is buggy as of uglify-es 3.3.7
-            // https://github.com/mishoo/UglifyJS2/issues/2842
-            inline: 1,
-          },
           mangle: {
             safari10: true,
           },
@@ -59,6 +55,8 @@ module.exports = merge(commonConfig, {
 
     splitChunks: {
       chunks: 'all',
+      maxInitialRequests: 20, // for HTTP2
+      maxAsyncRequests: 20, // for HTTP2
       name(module, chunks, cacheGroup) {
         const name = normalize(module, chunks, cacheGroup);
 
@@ -113,16 +111,19 @@ module.exports = merge(commonConfig, {
       maximumFileSizeToCacheInBytes: 5242880,
 
       runtimeCaching: [
-        {
-          urlPattern: /api\/v1\/sandboxes/,
-          handler: 'networkFirst',
-          options: {
-            cache: {
-              maxEntries: 50,
-              name: 'sandboxes-cache',
-            },
-          },
-        },
+        // Don't add this runtime cache as this causes us to give back *old*
+        // API responses, this will lead people to believe that they lost work
+        // when they can't connect to our servers.
+        // {
+        //   urlPattern: /api\/v1\/sandboxes/,
+        //   handler: 'networkFirst',
+        //   options: {
+        //     cache: {
+        //       maxEntries: 50,
+        //       name: 'sandboxes-cache',
+        //     },
+        //   },
+        // },
         {
           urlPattern: /^https:\/\/unpkg\.com/,
           handler: 'cacheFirst',
@@ -240,6 +241,17 @@ module.exports = merge(commonConfig, {
             cache: {
               maxEntries: 300,
               name: 'unpkg-dep-cache',
+              maxAgeSeconds: 60 * 60 * 24 * 7,
+            },
+          },
+        },
+        {
+          urlPattern: /^https:\/\/cdn\.rawgit\.com/,
+          handler: 'cacheFirst',
+          options: {
+            cache: {
+              maxEntries: 300,
+              name: 'rawgit-cache',
               maxAgeSeconds: 60 * 60 * 24 * 7,
             },
           },

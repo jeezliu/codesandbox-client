@@ -19,6 +19,7 @@ import Margin from 'common/components/spacing/Margin';
 import HeaderSearchBar from 'app/components/HeaderSearchBar';
 import UserMenu from 'app/pages/common/UserMenu';
 import theme from 'common/theme';
+import { saveAllModules } from 'app/store/modules/editor/utils';
 
 import Logo from './Logo';
 import Action from './Action';
@@ -56,7 +57,7 @@ const Header = ({ store, signals }) => {
             onClick={
               store.editor.isAllModulesSynced
                 ? null
-                : () => signals.editor.saveClicked()
+                : () => saveAllModules(store, signals)
             }
             placeholder={
               store.editor.isAllModulesSynced ? 'All modules are saved' : false
@@ -141,7 +142,7 @@ const Header = ({ store, signals }) => {
               modal: 'newSandbox',
             })
           }
-          tooltip="Create New Sandbox"
+          tooltip="New Sandbox"
           Icon={PlusIcon}
         />
 
@@ -168,7 +169,7 @@ const Header = ({ store, signals }) => {
           ) : (
             <Action
               onClick={() => signals.signInClicked()}
-              title="Sign in with Github"
+              title="Sign in with GitHub"
               Icon={GithubIcon}
               highlight
               unresponsive

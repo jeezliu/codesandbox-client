@@ -252,7 +252,8 @@
       "avatar_url": "https://avatars0.githubusercontent.com/u/13774309?v=4",
       "profile": "https://github.com/arthurdenner",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -561,6 +562,95 @@
       "contributions": [
         "code",
         "bug"
+      ]
+    },
+    {
+      "login": "lifeiscontent",
+      "name": "Aaron Reisman",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/180963?v=4",
+      "profile": "https://github.com/lifeiscontent",
+      "contributions": [
+        "bug",
+        "code",
+        "platform"
+      ]
+    },
+    {
+      "login": "colshacol",
+      "name": "Colton Colcleasure",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/19484365?v=4",
+      "profile": "https://github.com/colshacol",
+      "contributions": [
+        "code",
+        "bug"
+      ]
+    },
+    {
+      "login": "PJWalker",
+      "name": "PJ Walker",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/497242?v=4",
+      "profile": "https://github.com/PJWalker",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "satyarohith",
+      "name": "Satya Rohith",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/29819102?v=4",
+      "profile": "https://satya.tech",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "melanieseltzer",
+      "name": "Melanie Seltzer",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/17421347?v=4",
+      "profile": "https://www.melanieseltzer.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ZYSzys",
+      "name": "ZYSzys",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/23313266?v=4",
+      "profile": "http://zyszys.top",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "SaraVieira",
+      "name": "Sara Vieira",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1051509?v=4",
+      "profile": "http://iamsaravieira.com",
+      "contributions": [
+        "code",
+        "design",
+        "ideas"
+      ]
+    },
+    {
+      "login": "francoischalifour",
+      "name": "François Chalifour",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6137112?v=4",
+      "profile": "https://francoischalifour.com",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "dv297",
+      "name": "Daniel Vu",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5365325?v=4",
+      "profile": "https://twitter.com/dvv297",
+      "contributions": [
+        "code"
       ]
     }
   ],

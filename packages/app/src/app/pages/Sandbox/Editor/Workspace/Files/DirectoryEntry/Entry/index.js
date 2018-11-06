@@ -42,14 +42,21 @@ class Entry extends React.PureComponent {
   };
 
   handleRename = (newTitle, force) => {
-    const { shortid, title } = this.props;
-    if (newTitle === title) return;
+    const { shortid, title, rename } = this.props;
+
+    if (newTitle === title) {
+      this.resetState();
+      return;
+    }
 
     const canRename = !this.handleValidateTitle(newTitle);
-    if (canRename && this.props.rename) {
-      this.props.rename(shortid, newTitle);
+
+    if (newTitle !== title && canRename && rename) {
+      rename(shortid, newTitle);
       this.resetState();
-    } else if (force) this.resetState();
+    } else if (force) {
+      this.resetState();
+    }
   };
 
   delete = () => {
@@ -178,20 +185,29 @@ class Entry extends React.PureComponent {
             {isNotSynced && !state && <NotSyncedIconWithMargin />}
             {state === '' && (
               <Right>
-                {isMainModule ? (
-                  <span style={{ opacity: hovering ? 1 : 0 }}>main</span>
-                ) : (
-                  <EditIcons
-                    hovering={hovering}
-                    onCreateFile={onCreateModuleClick}
-                    onCreateDirectory={onCreateDirectoryClick}
-                    onUploadFile={onUploadFileClick}
-                    onDelete={deleteEntry && this.delete}
-                    onEdit={rename && this.rename}
-                    active={active}
-                    forceShow={window.__isTouch && type === 'directory-open'}
-                  />
+                {isMainModule && (
+                  <span
+                    style={{
+                      fontSize: '.75rem',
+                      fontWeight: 600,
+                      opacity: hovering ? 0.6 : 0,
+                      marginTop: 3,
+                      marginRight: 3,
+                    }}
+                  >
+                    entry
+                  </span>
                 )}
+                <EditIcons
+                  hovering={hovering}
+                  onCreateFile={onCreateModuleClick}
+                  onCreateDirectory={onCreateDirectoryClick}
+                  onUploadFile={onUploadFileClick}
+                  onDelete={deleteEntry && this.delete}
+                  onEdit={rename && this.rename}
+                  active={active}
+                  forceShow={window.__isTouch && type === 'directory-open'}
+                />
               </Right>
             )}
           </EntryContainer>
@@ -202,13 +218,17 @@ class Entry extends React.PureComponent {
 }
 
 const entrySource = {
-  canDrag: props => !!props.id && !props.isMainModule,
+  canDrag: props => !!props.id,
   beginDrag: props => {
     if (props.closeTree) props.closeTree();
+
+    const directory =
+      props.type === 'directory' || props.type === 'directory-open';
     return {
       id: props.id,
       shortid: props.shortid,
-      directory: props.type === 'directory' || props.type === 'directory-open',
+      directory,
+      path: !directory && props.getModulePath(props.id),
     };
   },
 };

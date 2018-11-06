@@ -22,11 +22,21 @@ import {
   StyledUserWithAvatar,
 } from './elements';
 
+const getDefaultSelectedVersion = tags => {
+  if (!tags) {
+    return '';
+  }
+
+  if (!tags.latest) {
+    return '';
+  }
+
+  return tags.latest + ' - latest';
+};
+
 export default class DependencyHit extends React.PureComponent {
   state = {
-    selectedVersion: this.props.hit.tags
-      ? this.props.hit.tags.latest || ''
-      : '',
+    selectedVersion: getDefaultSelectedVersion(this.props.hit.tags),
   };
 
   makeGitHubRepoUrl(repo) {
@@ -67,6 +77,9 @@ export default class DependencyHit extends React.PureComponent {
         return 0;
       }
     });
+
+    const getTagName = (tags, version) =>
+      Object.keys(tags).find(key => tags[key] === version);
 
     return (
       <Container highlighted={highlighted} onClick={onClick}>
@@ -125,7 +138,14 @@ export default class DependencyHit extends React.PureComponent {
               onChange={this.handleVersionChange}
               value={this.state.selectedVersion}
             >
-              {versions.map(v => <option key={v}>{v}</option>)}
+              {versions.map(v => {
+                const tagName = getTagName(hit.tags, v);
+                return (
+                  <option key={v}>
+                    {v} {tagName && `- ${tagName}`}
+                  </option>
+                );
+              })}
             </StyledSelect>
           </Row>
         </Right>

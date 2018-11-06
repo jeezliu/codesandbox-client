@@ -1,10 +1,11 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
 import Modal from 'app/components/Modal';
-import NewSandbox from 'app/components/NewSandbox';
 
+import NewSandbox from './NewSandbox';
 import PreferencesModal from './PreferencesModal';
 import DeleteSandboxModal from './DeleteSandboxModal';
+import DeleteDeploymentModal from './DeleteDeploymentModal/';
 import ShareModal from './ShareModal';
 import DeploymentModal from './DeploymentModal';
 import ExportGitHubModal from './ExportGitHubModal';
@@ -17,7 +18,8 @@ import LiveSessionEndedModal from './LiveSessionEndedModal';
 import LiveSessionVersionMismatch from './LiveSessionVersionMismatch';
 import UploadModal from './UploadModal';
 import StorageManagementModal from './StorageManagementModal';
-import DashboardChangelog from './Changelog/Dashboard';
+import ForkServerModal from './ForkServerModal';
+import PrivacyServerWarning from './PrivacyServerWarning';
 
 const modals = {
   preferences: {
@@ -26,7 +28,7 @@ const modals = {
   },
   newSandbox: {
     Component: NewSandbox,
-    width: 900,
+    width: 925,
   },
   share: {
     Component: ShareModal,
@@ -50,6 +52,10 @@ const modals = {
   },
   deleteSandbox: {
     Component: DeleteSandboxModal,
+    width: 400,
+  },
+  deleteDeployment: {
+    Component: DeleteDeploymentModal,
     width: 400,
   },
   deleteProfileSandbox: {
@@ -80,9 +86,13 @@ const modals = {
     Component: StorageManagementModal,
     width: 800,
   },
-  changelogDashboard: {
-    Component: DashboardChangelog,
+  forkServerModal: {
+    Component: ForkServerModal,
     width: 500,
+  },
+  privacyServerWarning: {
+    Component: PrivacyServerWarning,
+    width: 400,
   },
 };
 
@@ -95,7 +105,11 @@ function Modals({ store, signals }) {
       width={modal && modal.width}
       onClose={(isKeyDown: boolean) => signals.modalClosed({ isKeyDown })}
     >
-      {modal ? React.createElement(modal.Component) : null}
+      {modal
+        ? React.createElement(modal.Component, {
+            closeModal: () => signals.modalClosed({ isKeyDown: false }),
+          })
+        : null}
     </Modal>
   );
 }

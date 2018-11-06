@@ -20,6 +20,10 @@ export const Section = styled.div`
 
 export const Members = styled.div`
   margin-top: 1rem;
+
+  @media (max-width: 768px) {
+    margin-left: 1rem;
+  }
 `;
 
 export const MemberHeader = styled.div`
@@ -47,7 +51,8 @@ export const StyledEditIcon = styled(EditIcon)`
   font-size: 1rem;
   margin-bottom: 5px;
   margin-left: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: ${props =>
+    props.theme.light ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)'};
   cursor: pointer;
 
   &:hover {
