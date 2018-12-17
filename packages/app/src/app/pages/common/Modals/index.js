@@ -2,6 +2,8 @@ import React from 'react';
 import { inject, observer } from 'mobx-react';
 import Modal from 'app/components/Modal';
 
+import Loadable from 'app/utils/Loadable';
+
 import NewSandbox from './NewSandbox';
 import PreferencesModal from './PreferencesModal';
 import DeleteSandboxModal from './DeleteSandboxModal';
@@ -20,6 +22,12 @@ import UploadModal from './UploadModal';
 import StorageManagementModal from './StorageManagementModal';
 import ForkServerModal from './ForkServerModal';
 import PrivacyServerWarning from './PrivacyServerWarning';
+import PickSandboxModal from './PickSandboxModal';
+import FeedbackModal from './FeedbackModal';
+
+const MoveSandboxFolderModal = Loadable(() =>
+  import('./MoveSandboxFolderModal')
+);
 
 const modals = {
   preferences: {
@@ -50,13 +58,17 @@ const modals = {
     Component: PRModal,
     width: 400,
   },
+  deleteDeployment: {
+    Component: DeleteDeploymentModal,
+    width: 400,
+  },
   deleteSandbox: {
     Component: DeleteSandboxModal,
     width: 400,
   },
-  deleteDeployment: {
-    Component: DeleteDeploymentModal,
-    width: 400,
+  pickSandbox: {
+    Component: PickSandboxModal,
+    width: 600,
   },
   deleteProfileSandbox: {
     Component: DeleteProfileSandboxModal,
@@ -93,6 +105,14 @@ const modals = {
   privacyServerWarning: {
     Component: PrivacyServerWarning,
     width: 400,
+  },
+  moveSandbox: {
+    Component: MoveSandboxFolderModal,
+    width: 350,
+  },
+  feedback: {
+    Component: FeedbackModal,
+    width: 450,
   },
 };
 

@@ -48,6 +48,10 @@ function UserMenu({ signals, store, small }) {
               signals.signOutClicked();
             }}
             username={user.username}
+            curator={user.curatorAt}
+            openFeedback={() => {
+              signals.modalOpened({ modal: 'feedback' });
+            }}
           />
         </HoverMenu>
       )}

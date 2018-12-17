@@ -5,42 +5,102 @@ import UserIcon from 'react-icons/lib/ti/user';
 import ExitIcon from 'react-icons/lib/md/exit-to-app';
 import FolderIcon from 'react-icons/lib/md/folder';
 import SettingsIcon from 'react-icons/lib/md/settings';
-import { profileUrl, patronUrl } from 'common/utils/url-generator';
+import BookIcon from 'react-icons/lib/md/library-books';
+import {
+  profileUrl,
+  patronUrl,
+  curatorUrl,
+  dashboardUrl,
+} from 'common/utils/url-generator';
 import PatronBadge from 'common/utils/badges/PatronBadge';
+import InfoIcon from 'app/pages/Sandbox/Editor/Navigation/InfoIcon';
 
-import { Container, Item, Icon } from './elements';
+import { Container, Item, Icon, Separator } from './elements';
+import FeedbackIcon from './FeedbackIcon';
 
-function Menu({ username, openPreferences, openStorageManagement, signOut }) {
+function Menu({
+  username,
+  curator,
+  openPreferences,
+  openStorageManagement,
+  openFeedback,
+  signOut,
+}) {
   return (
     <Container>
-      <Link style={{ textDecoration: 'none' }} to={profileUrl(username)}>
-        <Item>
+      <Item as={Link} to={profileUrl(username)}>
+        <Icon>
+          <UserIcon />
+        </Icon>
+        My Profile
+      </Item>
+
+      <Separator />
+
+      <Item as={Link} to={dashboardUrl()}>
+        <Icon>
+          <InfoIcon />
+        </Icon>
+        Dashboard
+      </Item>
+
+      <Item as="a" href="/docs">
+        <Icon>
+          <BookIcon />
+        </Icon>
+        Documentation
+      </Item>
+
+      {curator && (
+        <Item as={Link} to={curatorUrl()}>
           <Icon>
-            <UserIcon />
-          </Icon>My Profile
+            <span css={{ width: 14 }} role="img" aria-label="Star">
+              ✨
+            </span>
+          </Icon>
+          Curator Dashboard
         </Item>
-      </Link>
+      )}
+
+      <Item as={Link} to={patronUrl()}>
+        <Icon>
+          <PatronBadge style={{ width: 24, margin: '-6px -5px' }} size={24} />
+        </Icon>
+        Patron Page
+      </Item>
+
+      <Separator />
+
       <Item onClick={openStorageManagement}>
         <Icon>
           <FolderIcon />
-        </Icon>Storage Management
+        </Icon>
+        Storage Management
       </Item>
+
       <Item onClick={openPreferences}>
         <Icon>
           <SettingsIcon />
-        </Icon>Preferences
+        </Icon>
+        Preferences
       </Item>
-      <Link style={{ textDecoration: 'none' }} to={patronUrl()}>
-        <Item>
-          <Icon>
-            <PatronBadge style={{ width: 24, margin: '-6px -5px' }} size={24} />
-          </Icon>Patron Page
-        </Item>
-      </Link>
+
+      <Separator />
+
+      <Item onClick={openFeedback}>
+        <Icon>
+          <FeedbackIcon />
+        </Icon>
+        Submit Feedback
+      </Item>
+
+      <Separator />
+
       <Item onClick={signOut}>
         <Icon>
           <ExitIcon />
-        </Icon>Sign out
+        </Icon>
+        Sign out
       </Item>
     </Container>
   );

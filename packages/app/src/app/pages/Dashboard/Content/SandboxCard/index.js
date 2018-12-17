@@ -158,31 +158,35 @@ class SandboxItem extends React.PureComponent<Props> {
     }
 
     if (selectedCount > 1) {
+      const items = [];
+
+      if (this.props.isPatron) {
+        items.push([
+          {
+            title: `Make ${selectedCount} Sandboxes Public`,
+            action: () => {
+              this.props.setSandboxesPrivacy(0);
+              return true;
+            },
+          },
+          {
+            title: `Make ${selectedCount} Sandboxes Unlisted`,
+            action: () => {
+              this.props.setSandboxesPrivacy(1);
+              return true;
+            },
+          },
+          {
+            title: `Make ${selectedCount} Sandboxes Private`,
+            action: () => {
+              this.props.setSandboxesPrivacy(2);
+              return true;
+            },
+          },
+        ]);
+      }
       return [
-        this.props.isPatron &&
-          [
-            {
-              title: `Make ${selectedCount} Sandboxes Public`,
-              action: () => {
-                this.props.setSandboxesPrivacy(0);
-                return true;
-              },
-            },
-            {
-              title: `Make ${selectedCount} Sandboxes Unlisted`,
-              action: () => {
-                this.props.setSandboxesPrivacy(1);
-                return true;
-              },
-            },
-            {
-              title: `Make ${selectedCount} Sandboxes Private`,
-              action: () => {
-                this.props.setSandboxesPrivacy(2);
-                return true;
-              },
-            },
-          ].filter(Boolean),
+        ...items,
         [
           {
             title: `Move ${selectedCount} Sandboxes To Trash`,
@@ -415,7 +419,7 @@ class SandboxItem extends React.PureComponent<Props> {
                 onBlur={this.handleOnBlur}
                 onFocus={this.handleOnFocus}
                 onKeyDown={this.handleKeyDown}
-                innerRef={el => {
+                ref={el => {
                   this.el = el;
                 }}
                 role="button"
@@ -474,7 +478,7 @@ class SandboxItem extends React.PureComponent<Props> {
 
                             return (
                               <Input
-                                innerRef={node => {
+                                ref={node => {
                                   input = node;
                                   if (node) {
                                     node.select();

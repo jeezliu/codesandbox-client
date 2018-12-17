@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { generateFileFromSandbox } from 'common/templates/configuration/package-json';
-import { identify } from 'common/utils/analytics';
+import track, { identify } from 'common/utils/analytics';
 
 import { parseConfigurations } from './utils/parse-configurations';
 import { mainModule, defaultOpenedModule } from './utils/main-module';
@@ -9,7 +9,11 @@ import { mainModule, defaultOpenedModule } from './utils/main-module';
 export function getSandbox({ props, api, path }) {
   return api
     .get(`/sandboxes/${props.id}`)
-    .then(data => path.success({ sandbox: data }))
+    .then(data => {
+      // data.template = 'custom';
+      const sandbox = data;
+      return path.success({ sandbox });
+    })
     .catch(error => {
       if (error.response.status === 404) {
         return path.notFound();
@@ -232,7 +236,7 @@ export function closeTabByIndex({ state, props }) {
 export function signInGithub({ browser, path, props }) {
   const { useExtraScopes } = props;
   const popup = browser.openPopup(
-    `/auth/github${useExtraScopes ? '?scope=user:email,public_repo' : ''}`,
+    `/auth/github${useExtraScopes ? '?scope=user:email,repo' : ''}`,
     'sign in'
   );
 
@@ -261,6 +265,7 @@ export function getAuthToken({ api, path }) {
 }
 
 export function setModal({ state, props }) {
+  track('Open Modal', { modal: props.modal });
   state.set('currentModal', props.modal);
 }
 

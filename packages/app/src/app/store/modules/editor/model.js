@@ -59,7 +59,7 @@ const Git = types.model({
   username: types.string,
 });
 
-const Sandbox = types.model({
+export const Sandbox = types.model({
   author: types.maybeNull(Author),
   description: types.maybeNull(types.string),
   directories: types.array(Directory),
@@ -85,6 +85,7 @@ const Sandbox = types.model({
   likeCount: types.number,
   modules: types.array(Module),
   npmDependencies: types.map(types.string),
+  environmentVariables: types.maybeNull(types.map(types.string)),
   originalGit: types.maybeNull(Git),
   originalGitCommitSha: types.maybeNull(types.string),
   owned: types.boolean,
@@ -98,6 +99,15 @@ const Sandbox = types.model({
   version: types.number,
   viewCount: types.number,
   team: types.maybeNull(Team),
+  collection: types.maybeNull(
+    types.union(
+      types.boolean,
+      types.model({
+        path: types.string,
+        id: types.string,
+      })
+    )
+  ),
 });
 
 export default {

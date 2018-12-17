@@ -7,18 +7,18 @@ module.exports = {
   presets: [
     // Latest stable ECMAScript features
     require.resolve('@babel/preset-flow'),
-    process.env.NODE_ENV === 'test' && [
+    [
       require.resolve('@babel/preset-env'),
       {
         targets: {
-          chrome: 67,
+          ie: 11,
           // We currently minify with uglify
           // Remove after https://github.com/mishoo/UglifyJS2/issues/448
         },
         // Disable polyfill transforms
         useBuiltIns: false,
         modules: false,
-        forceAllTransforms: true,
+        forceAllTransforms: !process.env.LOCAL_DEV,
       },
     ],
     // JSX, Flow
